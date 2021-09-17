@@ -12,7 +12,21 @@ pub static BOOT_LOADER_RAM_MEMCPY: [u8; 256] =
 pub static BOOT_LOADER_AT25SF128A: [u8; 256] =
     *include_bytes!(concat!(env!("OUT_DIR"), "/boot2_at25sf128a.padded.bin"));
 
-// The bootloader to use if you want to boot from an AT25SF128A flash device
+// The bootloader to use if you want to boot from an GD25Q64CS flash device
 pub static BOOT_LOADER_GD25Q64CS: [u8; 256] =
     *include_bytes!(concat!(env!("OUT_DIR"), "/boot2_gd25q64cs.padded.bin"));
 
+#[cfg(any(
+    feature = "w25q080",
+    not(any(feature = "ram_memcpy", feature = "at25sf128a", feature = "gd25q64cs"))
+))]
+pub static BOOT_LOADER: [u8; 256] = BOOT_LOADER_W25Q080;
+
+#[cfg(any(feature = "ram_memcpy"))]
+pub static BOOT_LOADER: [u8; 256] = BOOT_LOADER_RAM_MEMCPY;
+
+#[cfg(any(feature = "at25sf128a"))]
+pub static BOOT_LOADER: [u8; 256] = BOOT_LOADER_AT25SF128A;
+
+#[cfg(any(feature = "gd25q64cs"))]
+pub static BOOT_LOADER: [u8; 256] = BOOT_LOADER_GD25Q64CS;

@@ -1,7 +1,6 @@
 # Raspberry Pi RP2040 Second-Stage Bootloader
 
-This is a second stage bootloader for the Raspberry Pi RP2040 SoC. Currently only the W25Q080 flash chip (as used on 
-the Pico) is supported.
+This is a second stage bootloader for the Raspberry Pi RP2040 SoC.
 
 You can use this crate to include a second-stage bootloader in your application. Simply ensure that your linker script 
 puts the array exported by this crate at the start of your flash image (0x000 to 0x100).
