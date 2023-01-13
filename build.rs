@@ -29,11 +29,17 @@ fn make_elf<P: AsRef<Path>, Q: AsRef<Path>>(input_path: P, out_dir: Q) -> PathBu
     let mut result_file = PathBuf::from(input_path.file_name().unwrap());
     result_file.set_extension("elf");
     let result_path = out_dir.as_ref().join(result_file);
+    let clkdiv = if cfg!(feature = "fast-flash") {
+        2
+    } else {
+        4
+    };
     let output = Command::new("arm-none-eabi-gcc")
         .arg("-nostartfiles")
         .arg("-fPIC")
         .arg("--specs=nosys.specs")
         .arg("-Isrc/include")
+        .arg(format!("-DPICO_FLASH_SPI_CLKDIV={}", clkdiv))
         .arg(input_path)
         .arg("-o")
         .arg(&result_path)

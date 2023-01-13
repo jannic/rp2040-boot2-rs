@@ -15,3 +15,6 @@ crc-any = "2.3"
 [features]
 # Assemble the boot2 files. Requires GCC
 assemble = []
+# Set PICO_FLASH_SPI_CLKDIV=2 instead of 4 for
+# faster flash access
+fast-flash = ["assemble"]
