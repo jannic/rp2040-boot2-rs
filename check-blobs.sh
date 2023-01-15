@@ -18,7 +18,8 @@ for lib in bin/*.bin; do
     arm-none-eabi-objdump -b binary -m armv6-m -M force-thumb -D "$lib" > "bin/${filename%.bin}.before"
 done
 
-cargo build --features=assemble
+# Distributed binaries are compiled with CLKDIV=4
+PICO_FLASH_SPI_CLKDIV=4 cargo build --features=assemble
 
 for lib in bin/*.bin; do
     filename=$(basename "$lib")

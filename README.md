@@ -53,6 +53,27 @@ SECTIONS {
 } INSERT BEFORE .text;
 ```
 
+## Changing flash clock speed
+
+By default, the flash clock will be configured to be 1/4 of the system clock.
+In most cases, unless you are overclocking the RP2040, it should be safe to increase
+this to half the system clock. This can be achieved by setting the environment
+variable PICO_FLASH_SPI_CLKDIV to a value of 2, and building rp2040-boot2 with the
+feature `assemble`.
+
+For example, add this to your `.cargo/config.toml`:
+```
+[env]
+PICO_FLASH_SPI_CLKDIV = "2"
+```
+And this to `Cargo.toml`:
+```
+[dependencies]
+rp2040-boot2 = { version = "0.2.2", features = ["assemble"] }
+```
+
+This requires a GNU toolchain to build the boot2 loader from its assembly source.
+
 ## Booting from RAM
 
 If you want the bootloader to copy your application from flash to RAM before booting, you can use the boot loader `BOOT_LOADER_RAM_MEMCPY`, this will move all the contents from flash to RAM (up to RAM length). Using this strategy allows for faster execution and flash availability for persistent storage.

@@ -29,12 +29,19 @@ fn make_elf<P: AsRef<Path>, Q: AsRef<Path>>(input_path: P, out_dir: Q) -> PathBu
     let mut result_file = PathBuf::from(input_path.file_name().unwrap());
     result_file.set_extension("elf");
     let result_path = out_dir.as_ref().join(result_file);
+    let clkdiv_env: Option<&'static str> = option_env!("PICO_FLASH_SPI_CLKDIV");
+    let clkdiv = match clkdiv_env {
+        None => 4,
+        Some(clkdiv_str) => {
+            clkdiv_str.parse().expect("Failed to parse PICO_FLASH_SPI_CLKDIV value")
+        }
+    };
     let output = Command::new("arm-none-eabi-gcc")
         .arg("-nostartfiles")
         .arg("-fPIC")
         .arg("--specs=nosys.specs")
         .arg("-Isrc/include")
-        .arg("-DPICO_FLASH_SPI_CLKDIV=2")
+        .arg(format!("-DPICO_FLASH_SPI_CLKDIV={}", clkdiv))
         .arg(input_path)
         .arg("-o")
         .arg(&result_path)
@@ -112,12 +119,18 @@ fn main() -> Result<(), String> {
         println!("cargo:rerun-if-changed={}", asm_file);
     }
     println!("cargo:rerun-if-changed=./build.rs");
+    println!("cargo:rerun-if-env-changed=PICO_FLASH_SPI_CLKDIV");
 
     Ok(())
 }
 
 #[cfg(not(feature = "assemble"))]
 fn main() -> Result<(), String> {
-    println!("cargo:warning=Using prebuilt boot2 files. use feature `assemble` to rebuild instead (requires GNU toolchain)");
+    println!("cargo:warning=Using prebuilt boot2 files. Use feature `assemble` to rebuild instead (requires GNU toolchain)");
+    let clkdiv_env: Option<&'static str> = option_env!("PICO_FLASH_SPI_CLKDIV");
+    if clkdiv_env.is_some() {
+        println!("cargo:warning=The value of PICO_FLASH_SPI_CLKDIV is being ignored if the feature `assemble` is not active.");
+    }
+    println!("cargo:rerun-if-env-changed=PICO_FLASH_SPI_CLKDIV");
     Ok(())
 }

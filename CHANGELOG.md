@@ -2,9 +2,9 @@
 
 ## Unreleased Changes
 
-## v0.3.0
+## v0.2.2
 
-* Set PICO_FLASH_SPI_CLKDIV=2 when building boot2
+* Consider environment variable PICO_FLASH_SPI_CLKDIV when building boot2
 
 This doubles the flash access speed to the value used by the C SDK by
 default. So it should usually be safe. However, if you are overclocking
